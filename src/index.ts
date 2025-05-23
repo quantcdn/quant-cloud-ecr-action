@@ -51,6 +51,7 @@ async function run() {
         core.setOutput('endpoint', ecrToken.body.endpoint);
         core.setSecret(ecrToken.body.password);
     } catch (error) {
+        core.error('Please check your API key and organization name');
         if (error instanceof Error) {
             core.setFailed(error.message);
         } else {
