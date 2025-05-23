@@ -6,7 +6,7 @@ This GitHub Action retrieves ECR login credentials from Quant Cloud and sets the
 
 ```yaml
 - name: Get ECR Credentials
-  uses: quant-cloud/quant-cloud-ecr-action@v1
+  uses: quantcdn/quant-cloud-ecr-action@v1
   id: ecr-login
   with:
     api_key: ${{ secrets.QUANT_API_KEY }}
