@@ -1,0 +1,21 @@
+name: 'Quant Cloud Create Environment'
+description: 'Creates a new environment in Quant Cloud'
+inputs:
+  api_key:
+    description: 'Quant API key'
+    required: true
+  organization:
+    description: 'Quant organisation ID'
+    required: true
+  base_url:
+    description: 'Quant Cloud API URL'
+    required: false
+    default: 'https://dashboard.quantcdn.io/api/v3'
+outputs:
+  username:
+    description: 'The ECR username'
+  password:
+    description: 'The ECR password'
+runs:
+  using: 'node20'
+  main: 'dist/index.js' 
