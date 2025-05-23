@@ -20,10 +20,18 @@ const apiOpts = (apiKey: string) => {
 async function run() {
     const apiKey = core.getInput('api_key', { required: true });
     const organization = core.getInput('organization', { required: true });
-    const baseUrl = core.getInput('base_url', { required: false });
+    let baseUrl = core.getInput('base_url', { required: false });
+
+    if (!baseUrl) {
+        baseUrl = 'https://dashboard.quantcdn.io/api/v3';
+    } else {
+        core.warning(`Using base URL: ${baseUrl}`);
+    }
 
     const client = new ApplicationsApi(baseUrl);
     client.setDefaultAuthentication(apiOpts(apiKey));
+
+    core.info(`Getting ECR login credentials for ${organization} from ${baseUrl}`);
 
     try {
         const ecrToken = await client.getEcrLoginCredentials(organization);
