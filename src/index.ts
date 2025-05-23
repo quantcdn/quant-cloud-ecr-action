@@ -3,6 +3,12 @@ import {
     ApplicationsApi
 } from 'quant-ts-client';
 
+interface ApiError {
+    body?: {
+        message?: string;
+    }
+}
+
 const apiOpts = (apiKey: string) => {
     return{
         applyToRequest: (requestOptions: any) => {
@@ -46,6 +52,8 @@ async function run() {
             return;
         }
 
+        core.info('✅ ECR login credentials retrieved successfully');
+
         core.setOutput('username', ecrToken.body.username);
         core.setOutput('password', ecrToken.body.password);
         core.setOutput('endpoint', ecrToken.body.endpoint);
@@ -53,7 +61,16 @@ async function run() {
     } catch (error) {
         core.error('Please check your API key and organization name');
         if (error instanceof Error) {
-            core.setFailed(error.message);
+            const apiError = error as Error & ApiError;
+            if (apiError.body?.message) {
+                if (apiError.body.message == 'Unable to find matching result') {
+                    core.setFailed('Either the organization does not exist or you do not have access to it');
+                } else {
+                    core.setFailed(apiError.body.message);
+                }
+            } else {
+                core.setFailed(error.message);
+            }
         } else {
             core.setFailed('An unknown error occurred');
         }
