@@ -25,7 +25,7 @@ async function run() {
     if (!baseUrl) {
         baseUrl = 'https://dashboard.quantcdn.io/api/v3';
     } else {
-        core.warning(`Using base URL: ${baseUrl}`);
+        core.warning(`Using non-default base URL: ${baseUrl}`);
     }
 
     const client = new ApplicationsApi(baseUrl);
