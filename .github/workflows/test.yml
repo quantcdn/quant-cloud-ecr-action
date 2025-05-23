@@ -28,6 +28,12 @@ jobs:
       - name: Build with ncc
         run: npx ncc build src/index.ts
 
+      - name: Debug Action Files
+        run: |
+          ls -la
+          ls -la dist/
+          cat action.yml
+
       - name: Get ECR Credentials
         uses: ./
         id: ecr-login
@@ -35,6 +41,12 @@ jobs:
           api_key: ${{ secrets.QUANT_API_KEY }}
           organization: ${{ secrets.QUANT_ORG }}
           base_url: ${{ secrets.QUANT_BASE_URL }}
+
+      - name: Debug Outputs
+        run: |
+          echo "Username: ${{ steps.ecr-login.outputs.username }}"
+          echo "Endpoint: ${{ steps.ecr-login.outputs.endpoint }}"
+          echo "Password is masked"
 
       - name: Login to ECR
         uses: docker/login-action@v3

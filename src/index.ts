@@ -29,11 +29,13 @@ async function run() {
         const ecrToken = await client.getEcrLoginCredentials(organization);
 
         if (!ecrToken.body) {
-            throw new Error('No ECR token found');
+            core.setFailed('No ECR token found');
+            return;
         }
 
         if (!ecrToken.body.password) {
-            throw new Error('No ECR password found');
+            core.setFailed('No ECR password found');
+            return;
         }
 
         core.setOutput('username', ecrToken.body.username);
