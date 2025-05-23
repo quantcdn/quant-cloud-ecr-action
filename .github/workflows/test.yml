@@ -18,7 +18,7 @@ jobs:
         run: npm ci
 
       - name: Build with ncc
-        run: ncc build src/index.ts
+        run: npx ncc build src/index.ts
 
       - name: Get ECR Credentials
         uses: ./
