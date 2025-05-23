@@ -1,5 +1,7 @@
 name: 'Quant Cloud ECR Login'
 description: 'Get ECR login credentials from Quant Cloud'
+icon: 'archive'
+color: 'purple'
 inputs:
   api_key:
     description: 'Quant Cloud API key'
