@@ -38,6 +38,7 @@ async function run() {
 
         core.setOutput('username', ecrToken.body.username);
         core.setOutput('password', ecrToken.body.password);
+        core.setOutput('endpoint', ecrToken.body.endpoint);
         core.setSecret(ecrToken.body.password);
     } catch (error) {
         if (error instanceof Error) {
