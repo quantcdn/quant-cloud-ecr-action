@@ -1,0 +1,27 @@
+name: Test ECR Login
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get ECR Credentials
+        uses: ./
+        id: ecr-login
+        with:
+          api_key: ${{ secrets.QUANT_API_KEY }}
+          organization: ${{ secrets.QUANT_ORG }}
+          base_url: ${{ secrets.QUANT_BASE_URL }}
+
+      - name: Login to ECR
+        uses: docker/login-action@v3
+        with:
+          username: ${{ steps.ecr-login.outputs.username }}
+          password: ${{ steps.ecr-login.outputs.password }}
+
+      - name: Verify Login
+        run: docker info 
