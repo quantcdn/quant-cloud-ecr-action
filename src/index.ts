@@ -1,22 +1,11 @@
 import * as core from '@actions/core';
 import {
-    ApplicationsApi
-} from 'quant-ts-client';
+    ApplicationsApi,
+    Configuration
+} from '@quantcdn/quant-client';
 
 interface ApiError {
-    body?: {
-        message?: string;
-    }
-}
-
-const apiOpts = (apiKey: string) => {
-    return{
-        applyToRequest: (requestOptions: any) => {
-            if (requestOptions && requestOptions.headers) {
-                requestOptions.headers["Authorization"] = `Bearer ${apiKey}`;
-            }
-        }
-    }
+    response?: { data?: { message?: string } };
 }
 
 /**
@@ -34,39 +23,39 @@ async function run() {
         core.warning(`Using non-default base URL: ${baseUrl}`);
     }
 
-    const client = new ApplicationsApi(baseUrl);
-    client.setDefaultAuthentication(apiOpts(apiKey));
+    core.setSecret(apiKey);
+    const client = new ApplicationsApi(new Configuration({ basePath: baseUrl.replace(/\/+$/, '').replace(/\/api\/v3$/, ''), accessToken: apiKey }));
 
     core.info(`Getting ECR login credentials for ${organization} from ${baseUrl}`);
 
     try {
         const ecrToken = await client.getEcrLoginCredentials(organization);
 
-        if (!ecrToken.body) {
+        if (!ecrToken.data) {
             core.setFailed('No ECR token found');
             return;
         }
 
-        if (!ecrToken.body.password) {
+        if (!ecrToken.data.password) {
             core.setFailed('No ECR password found');
             return;
         }
 
         core.info('✅ ECR login credentials retrieved successfully');
 
-        core.setOutput('username', ecrToken.body.username);
-        core.setOutput('password', ecrToken.body.password);
-        core.setOutput('endpoint', ecrToken.body.endpoint);
-        core.setSecret(ecrToken.body.password);
+        core.setSecret(ecrToken.data.password);
+        await core.setOutput('username', ecrToken.data.username);
+        await core.setOutput('password', ecrToken.data.password);
+        await core.setOutput('endpoint', ecrToken.data.endpoint);
     } catch (error) {
         core.error('Please check your API key and organization name');
         if (error instanceof Error) {
             const apiError = error as Error & ApiError;
-            if (apiError.body?.message) {
-                if (apiError.body.message == 'Unable to find matching result') {
+            if (apiError.response?.data?.message) {
+                if (apiError.response?.data.message == 'Unable to find matching result') {
                     core.setFailed('Either the organization does not exist or you do not have access to it');
                 } else {
-                    core.setFailed(apiError.body.message);
+                    core.setFailed(apiError.response?.data.message);
                 }
             } else {
                 core.setFailed(error.message);
